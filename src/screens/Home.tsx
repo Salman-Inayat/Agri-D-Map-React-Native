@@ -2,98 +2,42 @@ import React, {useCallback, useState} from 'react';
 
 import {useData, useTheme, useTranslation} from '../hooks/';
 import {Block, Button, Image, Input, Product, Text} from '../components/';
+import {StyleSheet, View} from 'react-native';
+import MapboxGL from '@react-native-mapbox-gl/maps';
+
+MapboxGL.setAccessToken(
+  'pk.eyJ1Ijoic2FsbWFuLWluYXlhdCIsImEiOiJja3U3OGNzZzQzNHVlMm9xaG9sZmtoOXI3In0.rF7GhHsrNL8YPMUCLCI92A',
+);
+
+const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  container: {
+    height: 300,
+    width: 300,
+    backgroundColor: 'tomato',
+  },
+  map: {
+    flex: 1,
+  },
+});
 
 const Home = () => {
   const {t} = useTranslation();
-  const [tab, setTab] = useState<number>(0);
-  const {following, trending} = useData();
-  const [products, setProducts] = useState(following);
-  const {assets, colors, fonts, gradients, sizes} = useTheme();
 
-  const handleProducts = useCallback(
-    (tab: number) => {
-      setTab(tab);
-      setProducts(tab === 0 ? following : trending);
-    },
-    [following, trending, setTab, setProducts],
-  );
+  const {assets, colors, fonts, gradients, sizes} = useTheme();
 
   return (
     <Block>
-      {/* search input */}
-      <Block color={colors.card} flex={0} padding={sizes.padding}>
-        <Input search placeholder={t('common.search')} />
-      </Block>
-
-      {/* toggle products list */}
-      <Block
-        row
-        flex={0}
-        align="center"
-        justify="center"
-        color={colors.card}
-        paddingBottom={sizes.sm}>
-        <Button onPress={() => handleProducts(0)}>
-          <Block row align="center">
-            <Block
-              flex={0}
-              radius={6}
-              align="center"
-              justify="center"
-              marginRight={sizes.s}
-              width={sizes.socialIconSize}
-              height={sizes.socialIconSize}
-              gradient={gradients?.[tab === 0 ? 'primary' : 'secondary']}>
-              <Image source={assets.extras} color={colors.white} radius={0} />
-            </Block>
-            <Text p font={fonts?.[tab === 0 ? 'medium' : 'normal']}>
-              {t('home.following')}
-            </Text>
-          </Block>
-        </Button>
-        <Block
-          gray
-          flex={0}
-          width={1}
-          marginHorizontal={sizes.sm}
-          height={sizes.socialIconSize}
-        />
-        <Button onPress={() => handleProducts(1)}>
-          <Block row align="center">
-            <Block
-              flex={0}
-              radius={6}
-              align="center"
-              justify="center"
-              marginRight={sizes.s}
-              width={sizes.socialIconSize}
-              height={sizes.socialIconSize}
-              gradient={gradients?.[tab === 1 ? 'primary' : 'secondary']}>
-              <Image
-                radius={0}
-                color={colors.white}
-                source={assets.documentation}
-              />
-            </Block>
-            <Text p font={fonts?.[tab === 1 ? 'medium' : 'normal']}>
-              {t('home.trending')}
-            </Text>
-          </Block>
-        </Button>
-      </Block>
-
-      {/* products list */}
-      <Block
-        scroll
-        paddingHorizontal={sizes.padding}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: sizes.l}}>
-        <Block row wrap="wrap" justify="space-between" marginTop={sizes.sm}>
-          {products?.map((product) => (
-            <Product {...product} key={`card-${product?.id}`} />
-          ))}
-        </Block>
-      </Block>
+      <View style={styles.page}>
+        <View style={styles.container}>
+          <MapboxGL.MapView style={styles.map} />
+        </View>
+      </View>
     </Block>
   );
 };
